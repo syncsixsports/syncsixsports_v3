@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
 
 import GameHeader from "./GameHeader";
 import NumerologyStrip from "./NumerologyStrip";
@@ -9,8 +8,7 @@ import GematriaCard from "./GematriaCard";
 import AIInsights from "./AIInsights";
 import PlayerAccordion from "./PlayerAccordion";
 
-import { buildMasterData } from "../../lib/transformers/buildMasterData";
-import { runDailyEngine } from "../../engine/runDailyEngine";
+
 import type { MasterGameData } from "../../types/master";
 import { computeGematria } from "../../engine/gematria";
 import type { GameModelPlayer } from "./types";
@@ -275,8 +273,28 @@ function buildAccordionPlayers(
 // PAGE
 // ---------------------------------------------
 export default function GameModelPage() {
-  const searchParams = useSearchParams();
-  const gameId = searchParams.get("gameId");
+  const [gameId, setGameId] = useState<string | null>(null);
+
+  if (!gameId) {
+    return (
+      <div className="flex h-[100dvh] items-center justify-center text-white">
+        <div className="surface-glass px-5 py-3 text-sm text-white/70">
+          No game selected.
+        </div>
+      </div>
+    );
+  }
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("gameId");
+
+    if (id) {
+      setGameId(id);
+    }
+  }, []);
 
   const [data, setData] = useState<PageState | null>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -284,6 +302,8 @@ export default function GameModelPage() {
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
+    if (!gameId) return; // ⬅️ ADD THIS LINE
+
     let mounted = true;
 
     async function load() {
@@ -291,9 +311,16 @@ export default function GameModelPage() {
         setError("");
 
         const date = getTodayPST();
+        const { buildMasterData } = await import(
+          "../../lib/transformers/buildMasterData"
+        );
+
+        const { runDailyEngine } = await import(
+          "../../engine/runDailyEngine"
+        );
+
         const masterGames = await buildMasterData(date);
         const engine = await runDailyEngine(masterGames, date);
-
         const selectedGame = engine.games.find(
           (g: EngineGame) => String(g.gameId) === String(gameId)
         ) as EngineGame | undefined;

@@ -1,6 +1,7 @@
 // -----------------------------
 // FETCH NBA GAMES + TEAM STATS
 // -----------------------------
+export const dynamic = "force-dynamic";
 
 export type GameWithStats = {
   id: string;
@@ -27,13 +28,13 @@ export async function getNBAGamesWithStats(date: string): Promise<GameWithStats[
     const formattedDate = date.replaceAll("-", "");
 
     const res = await fetch(
-      `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=${formattedDate}`
+      `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=${formattedDate}`,
+      { cache: "no-store" }
     );
-
     const data = await res.json();
 
     const games: GameWithStats[] = (data?.events || [])
-    
+
       .map((event: any) => {
         const competition = event.competitions?.[0];
 
@@ -79,7 +80,8 @@ export async function getNBAGamesWithStats(date: string): Promise<GameWithStats[
 export async function fetchTeamRoster(teamId: string): Promise<any[]> {
   try {
     const res = await fetch(
-      `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/${teamId}/roster`
+      `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/${teamId}/roster`,
+      { cache: "no-store" }
     );
 
     const data = await res.json();
@@ -126,7 +128,8 @@ export async function fetchTeamRoster(teamId: string): Promise<any[]> {
 export async function fetchPlayerDetails(playerId: string) {
   try {
     const res = await fetch(
-      `https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/${playerId}`
+      `https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/${playerId}`,
+      { cache: "no-store" }
     );
 
     const data = await res.json();
@@ -145,7 +148,8 @@ export async function fetchPlayerDetails(playerId: string) {
 export async function fetchPlayerGameLog(playerId: string) {
   try {
     const res = await fetch(
-      `https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/${playerId}/gamelog`
+      `https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/${playerId}/gamelog`,
+      { cache: "no-store" }
     );
 
     const data = await res.json();
