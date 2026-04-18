@@ -275,16 +275,6 @@ function buildAccordionPlayers(
 export default function GameModelPage() {
   const [gameId, setGameId] = useState<string | null>(null);
 
-  if (!gameId) {
-    return (
-      <div className="flex h-[100dvh] items-center justify-center text-white">
-        <div className="surface-glass px-5 py-3 text-sm text-white/70">
-          No game selected.
-        </div>
-      </div>
-    );
-  }
-
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -403,6 +393,16 @@ export default function GameModelPage() {
       <div className="flex h-[100dvh] items-center justify-center text-white">
         <div className="surface-glass rounded-[var(--radius-lg)] px-5 py-3 text-sm text-white/70">
           {error}
+        </div>
+      </div>
+    );
+  }
+
+  if (!gameId) {
+    return (
+      <div className="flex h-[100dvh] items-center justify-center text-white">
+        <div className="surface-glass px-5 py-3 text-sm text-white/70">
+          Waiting for game...
         </div>
       </div>
     );
